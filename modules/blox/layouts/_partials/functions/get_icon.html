@@ -1,5 +1,5 @@
-{{/* Return the requested SVG icon */}}
-{{/* Search for the icon in the Hugo Blox Kit icon library, falling back to user's icon library */}}
+{{/* Return the requested SVG icon as safeHTML for Go template rendering.
+     Handles emoji packs and attribute injection on top of the shared get_icon_svg.html core. */}}
 
 {{ $dirFile := path.Split .name }}
 {{ $pack := .pack | default (strings.Replace $dirFile.Dir "/" "") | default "hero" }}
@@ -31,71 +31,24 @@
   {{ $attrs = printf "%s %s" $attrs $style_attr }}
   {{ $icon = printf "<span %s>%s</span>" $attrs $emoji }}
 {{- else -}}
-  {{- $icon_pack := index site.Data.icons $pack -}}
-  {{- $pack_icon := index (index $icon_pack "icons") $name -}}
+  {{/* Try to resolve as an SVG icon from packs / user assets */}}
+  {{ $icon = partial "functions/get_icon_svg" (dict "name" .name "pack" (.pack | default "") "Page" .Page) }}
 
-{{ if $pack_icon }}
-  {{ if in (slice "hb" "brands") $pack }}
-    {{ $icon = $pack_icon }}
-    {{/* Pass */}}
-  {{ else }}
-    {{ $icon_body := index $pack_icon "body" }}
-    {{ $icon_size := index $icon_pack "height" }}
-    {{ $icon = printf `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %s %s">%s</svg>` (cast.ToString $icon_size) (cast.ToString $icon_size) $icon_body }}
-  {{ end }}
-{{ else }}
-  {{/* Icon NOT found in pack - check if it's a direct Unicode emoji */}}
-  {{ if not (strings.Contains $.name "/") }}
-    {{/* No explicit pack specified (defaulted to hero) - treat as direct Unicode emoji */}}
-    {{ $attrs := .attributes | default "" }}
-    {{/* Convert SVG sizing to emoji text sizing (same as emoji pack) */}}
-    {{ if in $attrs "w-24" }}{{ $attrs = replaceRE "w-24 h-24" "text-8xl" $attrs }}{{ end }}
-    {{ if in $attrs "w-16" }}{{ $attrs = replaceRE "w-16 h-16" "text-5xl" $attrs }}{{ end }}
-    {{ if in $attrs "w-12" }}{{ $attrs = replaceRE "w-12 h-12" "text-5xl" $attrs }}{{ end }}
-    {{ if in $attrs "w-8" }}{{ $attrs = replaceRE "w-8 h-8" "text-4xl" $attrs }}{{ end }}
-    {{ if in $attrs "w-6" }}{{ $attrs = replaceRE "w-6 h-6" "text-2xl" $attrs }}{{ end }}
-    {{ if in $attrs "w-5" }}{{ $attrs = replaceRE "w-5 h-5" "text-xl" $attrs }}{{ end }}
-    {{ if in $attrs "w-4" }}{{ $attrs = replaceRE "w-4 h-4" "text-lg" $attrs }}{{ end }}
-    {{/* Add centering and line-height classes if not already present */}}
-    {{ if not (in $attrs "flex") }}{{ $attrs = replaceRE "class=\"" "class=\"flex items-center justify-center leading-none " $attrs }}{{ end }}
-    {{ $icon = printf "<span %s>%s</span>" $attrs $.name }}
-  {{ else }}
-    {{/* Explicit pack specified but icon not found - continue with fallback logic */}}
-    {{ with index (index site.Data.icons.hb "icons") $name -}}
-      {{ $icon = . }}
-    {{ else }}
-      {{- $prefix := printf "media/icons/%s/" $pack -}}
-      {{- $icon_path := printf "%s%s.svg" $prefix $name -}}
-      {{- if not (fileExists (printf "assets/%s" $icon_path)) -}}
-        {{ $pageRef := "unknown location" }}
-        {{ if .Page }}
-          {{ if .Page.File }}
-            {{ if .Page.File.Path }}
-              {{ $pageRef = .Page.File.Path }}
-            {{ else if .Page.RelPermalink }}
-              {{ $pageRef = .Page.RelPermalink }}
-            {{ end }}
-          {{ else if .Page.RelPermalink }}
-            {{ $pageRef = .Page.RelPermalink }}
-          {{ end }}
-        {{ end }}
-        {{ partial "functions/logger" (dict
-              "page" .Page
-              "level" "warn"
-              "id" (printf "missing-icon-%s-%s" $pack $name)
-              "message" (printf "The icon `%s` was not found in `assets/media/icons/%s/`. Referenced in: %s" $name $pack $pageRef)
-            )
-        }}
-      {{- end -}}
-      {{- $icon_resource := resources.Get $icon_path -}}
-      {{ if $icon_resource }}
-        {{ $icon = $icon_resource.Content }}
-      {{ else }}
-        {{ $icon = index (index site.Data.icons.brands "icons") "hugo" }}
-      {{ end }}
+  {{- if not $icon -}}
+    {{/* No pack prefix and not found in hero — treat the raw name as a Unicode emoji */}}
+    {{ if not (strings.Contains $.name "/") }}
+      {{ $attrs := .attributes | default "" }}
+      {{ if in $attrs "w-24" }}{{ $attrs = replaceRE "w-24 h-24" "text-8xl" $attrs }}{{ end }}
+      {{ if in $attrs "w-16" }}{{ $attrs = replaceRE "w-16 h-16" "text-5xl" $attrs }}{{ end }}
+      {{ if in $attrs "w-12" }}{{ $attrs = replaceRE "w-12 h-12" "text-5xl" $attrs }}{{ end }}
+      {{ if in $attrs "w-8" }}{{ $attrs = replaceRE "w-8 h-8" "text-4xl" $attrs }}{{ end }}
+      {{ if in $attrs "w-6" }}{{ $attrs = replaceRE "w-6 h-6" "text-2xl" $attrs }}{{ end }}
+      {{ if in $attrs "w-5" }}{{ $attrs = replaceRE "w-5 h-5" "text-xl" $attrs }}{{ end }}
+      {{ if in $attrs "w-4" }}{{ $attrs = replaceRE "w-4 h-4" "text-lg" $attrs }}{{ end }}
+      {{ if not (in $attrs "flex") }}{{ $attrs = replaceRE "class=\"" "class=\"flex items-center justify-center leading-none " $attrs }}{{ end }}
+      {{ $icon = printf "<span %s>%s</span>" $attrs $.name }}
     {{ end }}
-  {{ end }}
-{{ end }}
+  {{- end -}}
 {{- end -}}
 
 {{ if .attributes }}
