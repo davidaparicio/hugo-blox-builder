@@ -16,7 +16,7 @@
 <p align="center">
   <a href="https://hugoblox.com/start?utm_source=github&utm_medium=readme&utm_content=cta_start"><b>Start Free in Browser</b></a>
   &nbsp;•&nbsp;
-  <a href="https://marketplace.visualstudio.com/items?itemName=ownable.ownable"><b>Get HugoBlox Studio (VS Code)</b></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=ownable.ownable"><b>Get Ownable CMS (VS Code)</b></a>
 </p>
 
 <p align="center">
@@ -95,13 +95,13 @@ In the age of AI, **Markdown is the new source code**. HugoBlox gives you the sp
 ## 🧠 Edit the way you like (code-first, visual when you want it)
 
 - **Code-first**: Markdown/YAML + Hugo templates for full control.
-- **Visual editing (Researcher Plan)**: **HugoBlox Studio** in VS Code for drag-and-drop blocks, previews, and safer config edits.
+- **Visual editing (Researcher Plan)**: **Ownable CMS** in VS Code for drag-and-drop blocks, previews, and safer config edits.
 - **AI automation (Researcher Plan)**: spend less time on formatting, YAML fixes, imports, and maintenance.
 
 <p align="center">
-  <img src="./.github/media/studio/slide-1.webp" alt="HugoBlox Studio in Action" width="100%">
+  <img src="./.github/media/studio/slide-1.webp" alt="Ownable CMS in Action" width="100%">
 </p>
-<p align="center"><em>HugoBlox Studio: Visual editing meets code-first control.</em></p>
+<p align="center"><em>Ownable CMS: Visual editing meets code-first control.</em></p>
 
 ---
 
@@ -109,7 +109,7 @@ In the age of AI, **Markdown is the new source code**. HugoBlox gives you the sp
 
 | **Feature** | **Why it matters** |
 | :--- | :--- |
-| **HugoBlox Studio (VS Code)** | A visual CMS inside your editor. Drag-and-drop blocks without leaving VS Code. |
+| **Ownable CMS (VS Code)** | A visual CMS inside your editor. Drag-and-drop blocks without leaving VS Code. |
 | **Notebooks & LaTeX** | Render `.ipynb` and math-heavy pages natively. |
 | **BibTeX / DOI workflows** | Build publication pages and bibliographies without manual formatting. |
 | **Polyglot Support** | Write in Markdown, Jupyter, RMarkdown, or LaTeX Math. |
@@ -136,12 +136,12 @@ Ideal for **founders, labs, and startups**. Launch a site in minutes.
 
 👉 [**Start Free in Browser**](https://hugoblox.com/start?utm_source=github&utm_medium=readme&utm_content=get_started_browser)
 
-### Option 2: HugoBlox Studio (Best for Data/AI teams)
+### Option 2: Ownable CMS (Best for Data/AI teams)
 The power of a visual website builder, directly inside VS Code.
 
-1. **Install** [HugoBlox Studio from the Marketplace](https://marketplace.visualstudio.com/items?itemName=ownable.ownable).
+1. **Install** [Ownable CMS from the Marketplace](https://marketplace.visualstudio.com/items?itemName=ownable.ownable).
 2. **Open** any HugoBlox project folder.
-3. **Click** the HugoBlox Studio icon in the menu to start visually editing.
+3. **Click** the Ownable CMS icon in the menu to start visually editing.
 
 ### Option 3: The CLI (For DevOps/Eng)
 Scaffold a new project locally.
@@ -172,7 +172,7 @@ HugoBlox is **Open Core**. The **Free Kit** is production-grade and you will alw
 
 The Free Kit includes:
 
-- **[HugoBlox Studio](https://marketplace.visualstudio.com/items?itemName=ownable.ownable) Core**: Visual site configuration, theming, and content editing
+- **[Ownable CMS](https://marketplace.visualstudio.com/items?itemName=ownable.ownable) Core**: Visual site configuration, theming, and content editing
 - **Templates + blocks** for portfolios, labs, docs, and landing pages
 - **Markdown/YAML-first workflow** with Hugo + Tailwind performance
 - **Notebook + LaTeX support** for technical publishing
@@ -180,7 +180,7 @@ The Free Kit includes:
 
 ### 🤖 Pro (Automation)
 
-Upgrade to **Pro** for [HugoBlox Studio](https://marketplace.visualstudio.com/items?itemName=ownable.ownable) (requires extension login) when you want automation and lower maintenance overhead:
+Upgrade to **Pro** for [Ownable CMS](https://marketplace.visualstudio.com/items?itemName=ownable.ownable) (requires extension login) when you want automation and lower maintenance overhead:
 
 - **Less time debugging YAML** (Fix-it Bot + safer config editing)
 - **Less time formatting citations** (Magic Import + publication automation)
@@ -202,7 +202,7 @@ Upgrade to **Pro** for [HugoBlox Studio](https://marketplace.visualstudio.com/it
 
 👉 [**View Full Feature Matrix**](https://hugoblox.com/pricing?utm_source=github&utm_medium=readme&utm_content=pricing_matrix) &nbsp;•&nbsp; [**Get Pro**](https://hugoblox.com/pricing?utm_source=github&utm_medium=readme&utm_content=cta_pro)
 
-> "HugoBlox Studio saved me **40+ hours** on my lab site. Visual edits + BibTeX auto-updates = **citations up 3×**."
+> "Ownable CMS saved me **40+ hours** on my lab site. Visual edits + BibTeX auto-updates = **citations up 3×**."
 > <br/>— **Dr. Sarah Yang**, AI Researcher
 
 ### 🎨 HugoBlox Premium
