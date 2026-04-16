@@ -318,9 +318,9 @@
   {{ $i18n := "" }}
   {{ if eq $items_type "blog" }}
     {{ $i18n = "more_posts" }}
-  {{ else if eq $items_type "event" }}
+  {{ else if eq $items_type "events" }}
     {{ $i18n = "more_talks" }}
-  {{ else if eq $items_type "publication" }}
+  {{ else if eq $items_type "publications" }}
     {{ $i18n = "more_publications" }}
   {{ else }}
     {{ $i18n = "more_pages" }}

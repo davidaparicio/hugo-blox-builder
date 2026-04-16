@@ -8,6 +8,7 @@
 
 AGENTS.local.md
 CLAUDE.local.md
+.claude/settings.json
 
 # ============================================================================
 # Build Artifacts & Generated Files
