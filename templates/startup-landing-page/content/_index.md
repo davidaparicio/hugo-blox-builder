@@ -86,6 +86,25 @@ sections:
       # Reduce spacing
       spacing:
         padding: ["1rem", 0, "1rem", 0]
+  - block: steps
+    content:
+      title: Get started in minutes
+      text: No credit card required. Deploy to GitHub Pages in one click.
+      items:
+        - title: Choose a template
+          text: Pick from our library of production-ready templates — academic CV, startup landing page, research lab, and more.
+          icon: rectangle-stack
+        - title: Customise your content
+          text: Edit in simple YAML and Markdown. No coding required — everything configured through intuitive parameters.
+          icon: pencil-square
+        - title: Deploy everywhere
+          text: Push to GitHub and your site deploys automatically. Free hosting on GitHub Pages, Netlify, or Vercel.
+          icon: rocket-launch
+    design:
+      layout: horizontal
+      marker_style: icon
+      connector: none
+
   - block: features
     id: features
     content:

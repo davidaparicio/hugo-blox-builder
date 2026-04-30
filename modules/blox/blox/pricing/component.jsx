@@ -20,6 +20,7 @@ function BillingToggle({billing, setBilling, toggle}) {
         {toggle.monthly_label || "Monthly"}
       </span>
       <button
+        type="button"
         role="switch"
         aria-checked={isYearly}
         onClick={() => setBilling(isYearly ? "monthly" : "yearly")}
@@ -176,7 +177,7 @@ function PricingTier({tier, billing, icon_svgs}) {
   );
 }
 
-export const PricingBlock = ({content = {}, design = {}, icon_svgs = {}}) => {
+export const PricingBlock = ({content = {}, icon_svgs = {}}) => {
   const {title, subtitle, billing_toggle = {}, tiers = []} = content;
 
   const hasYearlyPrices = tiers.some(

@@ -85,7 +85,7 @@ function LogoItem({item, idx, logoStyle, logoSize, icon_svgs, item_images, padY 
       {visual}
     </a>
   ) : (
-    <div class={cls} aria-label={item.name || undefined}>{visual}</div>
+    <div class={cls} role="img" aria-label={item.name || undefined}>{visual}</div>
   );
 }
 
