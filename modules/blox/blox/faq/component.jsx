@@ -8,8 +8,14 @@ function renderInline(text) {
   return String(text)
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 rounded font-mono text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">$1</code>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 dark:text-primary-400 underline underline-offset-2 hover:text-primary-700 dark:hover:text-primary-300">$1</a>');
+    .replace(
+      /`(.*?)`/g,
+      '<code class="px-1.5 py-0.5 rounded font-mono text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">$1</code>',
+    )
+    .replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" class="text-primary-600 dark:text-primary-400 underline underline-offset-2 hover:text-primary-700 dark:hover:text-primary-300">$1</a>',
+    );
 }
 
 function renderRich(text) {
@@ -24,7 +30,7 @@ function renderRich(text) {
 
 function FaqItem({item, isOpen, onToggle}) {
   const question = item.question ?? item.title ?? "";
-  const answer   = item.answer   ?? item.text  ?? "";
+  const answer = item.answer ?? item.text ?? "";
 
   return (
     <div class="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
@@ -49,9 +55,7 @@ function FaqItem({item, isOpen, onToggle}) {
       </button>
 
       {/* CSS grid trick: grid-rows transition from 0fr → 1fr animates from 0 height to natural height */}
-      <div
-        class={`grid transition-all duration-300 ease-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-      >
+      <div class={`grid transition-all duration-300 ease-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
         <div class="overflow-hidden">
           <div
             class="px-6 pb-6 text-gray-600 dark:text-gray-300 leading-relaxed text-sm sm:text-base"
@@ -75,11 +79,7 @@ export const FaqBlock = ({content = {}, icon_svgs = {}, button_icon_svg}) => {
       <div class="max-w-3xl mx-auto">
         {(title || subtitle) && (
           <div class="text-center mb-10 lg:mb-14">
-            {subtitle && (
-              <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 dark:text-primary-400 mb-3">
-                {subtitle}
-              </p>
-            )}
+            {subtitle && <p class="text-xs font-semibold uppercase tracking-widest text-primary-600 dark:text-primary-400 mb-3">{subtitle}</p>}
             {title && (
               <h2
                 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white tracking-tight"
@@ -90,21 +90,13 @@ export const FaqBlock = ({content = {}, icon_svgs = {}, button_icon_svg}) => {
         )}
 
         {text && (
-          <div
-            class="text-center text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto"
-            dangerouslySetInnerHTML={{__html: renderRich(text)}}
-          />
+          <div class="text-center text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto" dangerouslySetInnerHTML={{__html: renderRich(text)}} />
         )}
 
         {items.length > 0 && (
           <div class="rounded-2xl ring-1 ring-gray-200 dark:ring-gray-700 bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
             {items.map((item, i) => (
-              <FaqItem
-                key={i}
-                item={item}
-                isOpen={openIdx === i}
-                onToggle={() => setOpenIdx(openIdx === i ? null : i)}
-              />
+              <FaqItem key={i} item={item} isOpen={openIdx === i} onToggle={() => setOpenIdx(openIdx === i ? null : i)} />
             ))}
           </div>
         )}

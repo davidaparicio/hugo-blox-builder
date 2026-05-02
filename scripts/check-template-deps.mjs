@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, resolve } from "node:path";
+import {readdirSync, readFileSync, statSync} from "node:fs";
+import {join, resolve} from "node:path";
 
 const REQUIRED = ["tailwindcss", "@tailwindcss/cli"];
 const TEMPLATES_DIR = resolve(process.argv[2] ?? "templates");
@@ -22,7 +22,7 @@ for (const name of readdirSync(TEMPLATES_DIR).sort()) {
     continue;
   }
 
-  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+  const deps = {...pkg.dependencies, ...pkg.devDependencies};
   const missing = REQUIRED.filter((dep) => !(dep in deps));
   if (missing.length) {
     failures.push(`${name}: missing ${missing.join(", ")}`);
@@ -34,9 +34,7 @@ for (const name of readdirSync(TEMPLATES_DIR).sort()) {
 if (failures.length) {
   console.error("✗ Template dependency audit failed:\n");
   for (const f of failures) console.error(`  ${f}`);
-  console.error(
-    `\nHugo >= 0.161.0 requires the npm @tailwindcss/cli package — the standalone tailwindcss binary is no longer accepted.`,
-  );
+  console.error(`\nHugo >= 0.161.0 requires the npm @tailwindcss/cli package — the standalone tailwindcss binary is no longer accepted.`);
   process.exit(1);
 }
 
