@@ -95,10 +95,10 @@ function DesktopTable({competitors, rows, cta, icon_svgs, rowStriping = false}) 
       {/* Card — overflow-visible so the highlight ring can extend above its top edge */}
       <div class="relative rounded-2xl ring-1 ring-gray-200 dark:ring-gray-700 bg-white dark:bg-gray-800 overflow-visible shadow-sm">
 
-        {/* Highlight column — ring + flat tint behind cells. Lives INSIDE the card so it paints on top of card bg, but BEFORE the table so cell content sits on top. */}
+        {/* Highlight column FILL — paints BEFORE table, behind cells. Cell content sits on top. */}
         {highlightIdx >= 0 && (
           <div
-            class="absolute pointer-events-none ring-2 ring-primary-500 dark:ring-primary-400 rounded-2xl bg-primary-50/60 dark:bg-primary-900/20"
+            class="absolute pointer-events-none rounded-2xl bg-primary-50/60 dark:bg-primary-900/20"
             style={`top: -1.25rem; bottom: 0; left: calc(${colLeftPct}% - 4px); width: calc(${colWidthPct}% + 8px);`}
           />
         )}
@@ -162,21 +162,25 @@ function DesktopTable({competitors, rows, cta, icon_svgs, rowStriping = false}) 
                 dataIdx++;
                 const values = row.values ?? [];
                 const isOdd = rowStriping && dataIdx % 2 === 1;
-                const rowBg = row.highlight
-                  ? "bg-primary-100/50 dark:bg-primary-900/25"
-                  : isOdd
-                  ? "bg-gray-50/70 dark:bg-gray-800/30"
-                  : "";
+
+                // Row-highlight tints the whole row (intentional — the row is the focus).
+                // Zebra stripes apply per-cell so cells inside the highlight column can opt out
+                // (otherwise the stripe washes out the column's brand tint).
+                const cellBg = (ci) => {
+                  if (row.highlight) return "bg-primary-100/50 dark:bg-primary-900/25";
+                  if (isOdd && ci !== highlightIdx) return "bg-gray-50/70 dark:bg-gray-800/30";
+                  return "";
+                };
                 return (
-                  <tr key={ri} class={`border-t border-gray-100 dark:border-gray-700/50 ${rowBg}`}>
-                    <td class="px-6 py-4">
+                  <tr key={ri} class="border-t border-gray-100 dark:border-gray-700/50">
+                    <td class={`px-6 py-4 ${cellBg(-1)}`}>
                       <div class="text-sm font-medium text-gray-900 dark:text-white">{row.feature}</div>
                       {row.note && (
                         <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{row.note}</div>
                       )}
                     </td>
                     {competitors.map((_, ci) => (
-                      <td key={ci} class="px-6 py-4">
+                      <td key={ci} class={`px-6 py-4 ${cellBg(ci)}`}>
                         <CellContent cell={resolveCell(values[ci])} isHighlighted={ci === highlightIdx} />
                       </td>
                     ))}
@@ -206,6 +210,14 @@ function DesktopTable({competitors, rows, cta, icon_svgs, rowStriping = false}) 
             )}
           </tbody>
         </table>
+
+        {/* Highlight column OUTLINE — paints AFTER the table so row stripes/tints can't interrupt the violet ring. Outline only, no fill (fill is handled by the layer behind the table). */}
+        {highlightIdx >= 0 && (
+          <div
+            class="absolute pointer-events-none ring-2 ring-primary-500 dark:ring-primary-400 rounded-2xl"
+            style={`top: -1.25rem; bottom: 0; left: calc(${colLeftPct}% - 4px); width: calc(${colWidthPct}% + 8px);`}
+          />
+        )}
       </div>
     </div>
   );

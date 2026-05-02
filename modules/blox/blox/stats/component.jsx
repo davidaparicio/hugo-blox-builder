@@ -117,8 +117,14 @@ function gridColsClass(count) {
   return "lg:grid-cols-3";
 }
 
+// Gradient text uses bg-clip-text so colors come from the gradient utilities
+// (full classes for Tailwind's source scanner to pick up at build time)
+const GRADIENT_NUMBER_CLS = "bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-500 dark:from-primary-400 dark:via-primary-300 dark:to-secondary-400 bg-clip-text text-transparent";
+const SOLID_NUMBER_CLS    = "text-gray-900 dark:text-white";
+
 // ─── Stat Item (Cards) ───────────────────────────────────────────────
-function StatCard({item, iconSvg}) {
+function StatCard({item, iconSvg, numbersGradient}) {
+  const numberCls = numbersGradient ? GRADIENT_NUMBER_CLS : SOLID_NUMBER_CLS;
   return (
     <div class="stats-item group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-800">
       {/* Hover gradient */}
@@ -135,7 +141,7 @@ function StatCard({item, iconSvg}) {
         {/* Statistic */}
         <div class="mb-3">
           <h3
-            class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300 counter"
+            class={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black ${numberCls} transition-colors duration-300 counter`}
             data-target={parseTarget(item.statistic)}
             dangerouslySetInnerHTML={{__html: renderText(item.statistic)}}
           />
@@ -155,7 +161,8 @@ function StatCard({item, iconSvg}) {
 }
 
 // ─── Stat Item (Compact) ─────────────────────────────────────────────
-function StatCompact({item, iconSvg}) {
+function StatCompact({item, iconSvg, numbersGradient}) {
+  const numberCls = numbersGradient ? GRADIENT_NUMBER_CLS : SOLID_NUMBER_CLS;
   return (
     <div class="stats-item group p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-300">
       {iconSvg && (
@@ -165,7 +172,7 @@ function StatCompact({item, iconSvg}) {
       )}
 
       <h3
-        class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-2 counter"
+        class={`text-3xl sm:text-4xl lg:text-5xl font-bold ${numberCls} mb-2 counter`}
         data-target={parseTarget(item.statistic)}
         dangerouslySetInnerHTML={{__html: renderText(item.statistic)}}
       />
@@ -179,7 +186,8 @@ function StatCompact({item, iconSvg}) {
 }
 
 // ─── Stat Item (Minimal) ─────────────────────────────────────────────
-function StatMinimal({item, iconSvg}) {
+function StatMinimal({item, iconSvg, numbersGradient}) {
+  const numberCls = numbersGradient ? GRADIENT_NUMBER_CLS : SOLID_NUMBER_CLS;
   return (
     <div class="stats-item text-center group">
       {iconSvg && (
@@ -189,7 +197,7 @@ function StatMinimal({item, iconSvg}) {
       )}
 
       <h3
-        class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-2 counter"
+        class={`text-3xl sm:text-4xl lg:text-5xl font-bold ${numberCls} mb-2 counter`}
         data-target={parseTarget(item.statistic)}
         dangerouslySetInnerHTML={{__html: renderText(item.statistic)}}
       />
@@ -208,6 +216,7 @@ export const StatsBlock = ({content, design, _id, icon_svgs}) => {
   const text = content?.text;
   const items = Array.isArray(content?.items) ? content.items : [];
   const layout = (design?.layout || "cards").toLowerCase();
+  const numbersGradient = design?.numbers_gradient === true;
 
   const count = Math.max(1, Math.min(items.length, 4));
   const lgCols = gridColsClass(count);
@@ -236,7 +245,7 @@ export const StatsBlock = ({content, design, _id, icon_svgs}) => {
         {layout === "cards" && (
           <div class={`grid grid-cols-1 sm:grid-cols-2 ${lgCols} gap-6 lg:gap-8`}>
             {items.map((item, idx) => (
-              <StatCard key={idx} item={item} iconSvg={item.icon ? iconMap[item.icon] : null} />
+              <StatCard key={idx} item={item} iconSvg={item.icon ? iconMap[item.icon] : null} numbersGradient={numbersGradient} />
             ))}
           </div>
         )}
@@ -246,7 +255,7 @@ export const StatsBlock = ({content, design, _id, icon_svgs}) => {
           <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div class={`grid grid-cols-1 sm:grid-cols-2 ${lgCols} divide-y sm:divide-y-0 sm:divide-x divide-gray-200 dark:divide-gray-700`}>
               {items.map((item, idx) => (
-                <StatCompact key={idx} item={item} iconSvg={item.icon ? iconMap[item.icon] : null} />
+                <StatCompact key={idx} item={item} iconSvg={item.icon ? iconMap[item.icon] : null} numbersGradient={numbersGradient} />
               ))}
             </div>
           </div>
@@ -256,7 +265,7 @@ export const StatsBlock = ({content, design, _id, icon_svgs}) => {
         {layout === "minimal" && (
           <div class={`grid ${baseCols} ${lgCols} gap-8 lg:gap-12`}>
             {items.map((item, idx) => (
-              <StatMinimal key={idx} item={item} iconSvg={item.icon ? iconMap[item.icon] : null} />
+              <StatMinimal key={idx} item={item} iconSvg={item.icon ? iconMap[item.icon] : null} numbersGradient={numbersGradient} />
             ))}
           </div>
         )}

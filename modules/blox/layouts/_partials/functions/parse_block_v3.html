@@ -152,12 +152,20 @@
   {{ $gradient_mesh_html = $mesh_html | safeHTML }}
 {{ end }}
 
-{{/* Legacy simple gradient support */}}
+{{/* Linear or radial gradient (radial added for 2026 hero spotlight pattern) */}}
 {{ if and $bg.gradient.start $bg.gradient.end }}
-  {{ $angle := string $bg.gradient.direction | default "135" }}
   {{ $start_color := $bg.gradient.start }}
   {{ $end_color := $bg.gradient.end }}
-  {{ $gradient_layer = printf "linear-gradient(%sdeg, %s, %s)" $angle $start_color $end_color }}
+  {{ $gradient_type := $bg.gradient.type | default "linear" }}
+  {{ if eq $gradient_type "radial" }}
+    {{ $shape := $bg.gradient.shape | default "ellipse" }}
+    {{ $position := $bg.gradient.position | default "center" }}
+    {{ $size := $bg.gradient.size | default "farthest-corner" }}
+    {{ $gradient_layer = printf "radial-gradient(%s %s at %s, %s, %s)" $shape $size $position $start_color $end_color }}
+  {{ else }}
+    {{ $angle := string $bg.gradient.direction | default "135" }}
+    {{ $gradient_layer = printf "linear-gradient(%sdeg, %s, %s)" $angle $start_color $end_color }}
+  {{ end }}
 {{ end }}
 
 {{/* Process video backgrounds */}}
@@ -261,6 +269,21 @@
 {{/* Support for clip path (design.clip_path) */}}
 {{ with $block.design.clip_path }}
   {{ $style = printf "%sclip-path: %s;" $style . }}
+{{ end }}
+
+{{/* Section break: mask-image fade for smooth transitions between sections */}}
+{{ with $block.design.section_break }}
+  {{ $mask := "" }}
+  {{ if eq . "fade-top" }}
+    {{ $mask = "linear-gradient(to bottom, transparent 0%, black 6rem, black 100%)" }}
+  {{ else if eq . "fade-bottom" }}
+    {{ $mask = "linear-gradient(to bottom, black 0%, black calc(100% - 6rem), transparent 100%)" }}
+  {{ else if eq . "fade-both" }}
+    {{ $mask = "linear-gradient(to bottom, transparent 0%, black 6rem, black calc(100% - 6rem), transparent 100%)" }}
+  {{ end }}
+  {{ with $mask }}
+    {{ $style = printf "%s-webkit-mask-image: %s; mask-image: %s;" $style . . }}
+  {{ end }}
 {{ end }}
 
 {{ $hash_id := $block.id | default (printf "section-%s" (replace $block_type "." "-")) }}

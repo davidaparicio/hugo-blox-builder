@@ -28,30 +28,44 @@ export const CtaCardBlock = ({content, design, _id, button_icon_svg}) => {
     if (!Number.isNaN(val)) overlayOpacity = Math.max(0, Math.min(1, val));
   }
 
-  // Text Color Logic
+  // Text Color Logic — three modes:
+  // - "light": white title + white/80 body, white pill button (use on coloured/dark cards)
+  // - "dark":  dark title + dark body, dark pill button (use on white/light cards)
+  // - "auto":  detect from card classes — colored gradient or saturated bg → light, else fall back
+  //
+  // All output classes must be FULL LITERAL STRINGS so Tailwind's source scanner picks them up.
   let textColorMode = "auto";
   if (["light", "dark", "auto"].includes(card.text_color?.toLowerCase())) {
     textColorMode = card.text_color.toLowerCase();
   }
 
-  let textClasses = "text-gray-900 dark:text-white";
-  let buttonClasses = "text-gray-900 dark:text-gray-100";
-
-  // Auto-detect based on background gradient
-  const bg = design?.background || {};
-  const gradientStart = bg.gradient?.start || "";
-  const isDarkBg = ["primary-7", "primary-8", "primary-9", "secondary-7", "secondary-8", "secondary-9"].some((p) => gradientStart.startsWith(p));
-
-  if (textColorMode === "light") {
-    textClasses = "text-white";
-    buttonClasses = "text-gray-900 dark:text-white";
-  } else if (textColorMode === "dark") {
-    textClasses = "text-gray-900 dark:text-white";
-    buttonClasses = "text-gray-900 dark:text-white";
-  } else if (isDarkBg) {
-    textClasses = "text-white";
-    buttonClasses = "text-gray-900";
+  if (textColorMode === "auto") {
+    const looksColored =
+      cardClass.includes("bg-gradient") ||
+      /\bbg-(primary|secondary|violet|indigo|blue|purple|pink|fuchsia|rose|red|orange|amber|emerald|teal|cyan|sky)-[4-9]\d{0,2}\b/.test(cardClass) ||
+      /\bfrom-(primary|secondary|violet|indigo|blue|purple|pink|fuchsia|rose|red|orange|amber|emerald|teal|cyan|sky)-[4-9]/.test(cardClass);
+    // Legacy detection: design.background.gradient.start using saturated Tailwind tokens
+    const bg = design?.background || {};
+    const gradientStart = bg.gradient?.start || "";
+    const legacyDarkBg = ["primary-7", "primary-8", "primary-9", "secondary-7", "secondary-8", "secondary-9"].some((p) => gradientStart.startsWith(p));
+    textColorMode = (looksColored || legacyDarkBg) ? "light" : "dark";
   }
+
+  // Title, body, and button classes — full literals only
+  const titleClasses = textColorMode === "light"
+    ? "text-white"
+    : "text-gray-900 dark:text-white";
+  const bodyClasses = textColorMode === "light"
+    ? "text-white/80"
+    : "text-gray-700 dark:text-gray-300";
+  // Button: in "light" mode (coloured card), keep a white pill across both themes for consistency.
+  // In "dark" mode (light card), use a dark pill.
+  const buttonBgClasses = textColorMode === "light"
+    ? "bg-white ring-1 ring-white/40 hover:bg-white/95 hover:ring-white/60 shadow-lg"
+    : "bg-gray-900 dark:bg-white ring-1 ring-gray-900/10 dark:ring-white/10 hover:bg-gray-800 dark:hover:bg-gray-100 shadow-lg";
+  const buttonTextClasses = textColorMode === "light"
+    ? "text-gray-900"
+    : "text-white dark:text-gray-900";
 
   // Button Logic
   const button = content?.button || {};
@@ -85,7 +99,7 @@ export const CtaCardBlock = ({content, design, _id, button_icon_svg}) => {
       {/* Title */}
       {content.title && (
         <h2
-          class={`${textClasses} text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-tight`}
+          class={`${titleClasses} text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-tight`}
           dangerouslySetInnerHTML={{__html: renderText(content.title)}}
         />
       )}
@@ -93,7 +107,7 @@ export const CtaCardBlock = ({content, design, _id, button_icon_svg}) => {
       {/* Text */}
       {content.text && (
         <div
-          class={`${textClasses}/80 mt-6 text-lg sm:text-xl lg:text-2xl max-w-3xl leading-relaxed font-light`}
+          class={`${bodyClasses} mt-6 text-lg sm:text-xl lg:text-2xl max-w-3xl leading-relaxed font-light`}
           dangerouslySetInnerHTML={{__html: renderText(content.text)}}
         />
       )}
@@ -105,21 +119,14 @@ export const CtaCardBlock = ({content, design, _id, button_icon_svg}) => {
             href={buttonUrl}
             target={isNewTab ? "_blank" : undefined}
             rel={isNewTab ? "noopener" : undefined}
-            class={`group relative inline-flex items-center gap-3 px-8 py-4 text-lg font-semibold ${buttonClasses} transition-all duration-300 ease-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 dark:focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent`}
+            class={`group inline-flex items-center gap-3 rounded-2xl px-8 py-4 text-lg font-semibold ${buttonBgClasses} ${buttonTextClasses} transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent`}
           >
-            {/* Glassmorphism Background */}
-            <div class="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl ring-1 ring-gray-200/30 dark:ring-white/30 shadow-lg group-hover:bg-white dark:group-hover:bg-gray-800 group-hover:ring-gray-300/50 dark:group-hover:ring-white/50 group-hover:shadow-2xl transition-all duration-300"></div>
-
-            {/* Button Content */}
-            <span class="relative z-10">{buttonText}</span>
+            <span>{buttonText}</span>
             {button_icon_svg && (
-              <span class="relative z-10 transition-transform duration-300 group-hover:translate-x-1">
+              <span class="transition-transform duration-300 group-hover:translate-x-1">
                 <Icon svg={button_icon_svg} attributes={{style: "height: 1.25em", class: "inline-block"}} />
               </span>
             )}
-
-            {/* Glow Effect */}
-            <div class="absolute inset-0 bg-white/20 dark:bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
           </a>
         </div>
       )}

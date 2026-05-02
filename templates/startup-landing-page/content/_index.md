@@ -24,18 +24,28 @@ sections:
       spacing:
         padding: [0, 0, 0, 0]
         margin: [0, 0, 0, 0]
-      # For full-screen, add `min-h-screen` below
       css_class: "dark"
+      section_break: fade-bottom
       background:
-        color: "navy"
-        image:
-          # Add your image background to `assets/media/`.
-          filename: bg-triangles.svg
-          filters:
-            brightness: 0.5
-          size: cover
-          position: center
-          parallax: false
+        # Deep navy base; radial glow paints a soft violet spotlight from above
+        color: "#0a0e27"
+        gradient:
+          type: radial
+          start: "rgba(124,58,237,0.45)"
+          end: "transparent"
+          position: "50% -10%"
+          shape: ellipse
+          size: "80% 80%"
+        # Subtle mesh orbs add depth without competing with the headline
+        gradient_mesh:
+          enable: true
+          style: orbs
+          intensity: subtle
+          animation: pulse
+          colors: ["primary-500/15", "secondary-500/15"]
+          orb_count: 2
+          positions: ["top-1/4 left-1/4", "bottom-1/4 right-1/4"]
+          sizes: ["w-[28rem] h-[28rem]", "w-[24rem] h-[24rem]"]
   - block: logos
     content:
       title: Trusted by teams at
@@ -81,11 +91,11 @@ sections:
             Discord community  
             for support
     design:
-      # Section background color (CSS class)
-      css_class: "bg-gray-100 dark:bg-gray-900"
-      # Reduce spacing
+      layout: minimal
+      numbers_gradient: true
+      css_class: "bg-white dark:bg-gray-900"
       spacing:
-        padding: ["1rem", 0, "1rem", 0]
+        padding: ["3rem", 0, "3rem", 0]
   - block: steps
     content:
       title: Get started in minutes
@@ -108,27 +118,83 @@ sections:
   - block: features
     id: features
     content:
-      title: Features
-      text: Build your site with blocks 🧱
+      subtitle: Why Hugo Blox
+      title: Build sites in blocks, not code
+      text: Production-grade page-building blocks. Edit in Markdown and YAML. Deploy anywhere.
       items:
-        - name: Optimized SEO
-          icon: magnifying-glass
-          description: Automatic sitemaps, RSS feeds, and rich metadata take the pain out of SEO and syndication.
-        - name: Fast
-          icon: bolt
-          description: Super fast page load with Tailwind CSS and super fast site building with Hugo.
-        - name: Easy
-          icon: sparkles
-          description: One-click deployment to GitHub Pages. Have your new website live within 5 minutes!
-        - name: No-Code
-          icon: code-bracket
-          description: Edit and design your site just using rich text (Markdown) and configurable YAML parameters.
-        - name: Highly Rated
-          icon: star
-          description: Rated 5-stars by the community.
-        - name: Swappable Blocks
+        - name: Swappable blocks
           icon: rectangle-group
-          description: Build your pages with blocks - no coding required!
+          description: Compose pages from a curated catalog of pre-designed sections — heroes, pricing, FAQs, comparison tables, testimonials, and more. Mix, match, and customise without touching the underlying HTML.
+        - name: Lightning fast
+          icon: bolt
+          description: Sub-3-second builds and 100/100 Lighthouse scores by default — Tailwind CSS plus Hugo's native speed.
+        - name: No-code editing
+          icon: code-bracket
+          description: Edit content in Markdown and configure with readable YAML. No JavaScript required.
+        - name: SEO out of the box
+          icon: magnifying-glass
+          description: Automatic sitemaps, RSS feeds, JSON-LD, and rich metadata — SEO and syndication handled.
+        - name: Deploy anywhere
+          icon: rocket-launch
+          description: Push to GitHub and deploy to Pages, Netlify, Vercel, or Cloudflare in minutes.
+        - name: Loved by the community
+          icon: star
+          description: 10,000+ GitHub stars and 3,000+ Discord members. Rated 5-stars by the community.
+    design:
+      layout: bento
+      css_class: "bg-gray-50 dark:bg-gray-900/50"
+  - block: comparison-table
+    id: compare
+    content:
+      subtitle: How we compare
+      title: Why teams switch to Hugo Blox
+      text: We picked the categories that matter to teams shipping today.
+      competitors:
+        - name: Hugo Blox
+          tagline: Open-source page builder
+          highlight: true
+          badge: Recommended
+        - name: WordPress
+          tagline: Self-hosted CMS
+        - name: Squarespace
+          tagline: Hosted website builder
+        - name: Webflow
+          tagline: Visual web builder
+      rows:
+        - feature: Performance
+          category: true
+        - feature: Build time
+          note: 100 pages, cold cache
+          values: ["<3s", "60s+", "—", "20s+"]
+        - feature: Lighthouse score
+          values: ["100", "70", "90", "95"]
+        - feature: Cost & ownership
+          category: true
+        - feature: Free tier
+          values: [true, true, false, false]
+        - feature: Self-hosted
+          values: [true, true, false, false]
+        - feature: Source code access
+          values: [true, true, false, false]
+          highlight: true
+        - feature: Monthly cost
+          values: ["Free", "$5+ hosting", "$23/mo", "$29/mo"]
+        - feature: Developer experience
+          category: true
+        - feature: Git-based content
+          values: [true, false, false, false]
+        - feature: AI site builder
+          values: [true, false, false, "partial"]
+        - feature: Custom code
+          values: [true, true, "limited", "limited"]
+      cta:
+        text: Start free
+        url: https://hugoblox.com/templates/
+        icon: hero/arrow-right
+    design:
+      row_striping: true
+      css_class: "bg-gray-50 dark:bg-gray-900/50"
+
   - block: pricing
     id: pricing
     content:
@@ -263,16 +329,43 @@ sections:
       spacing:
         # Reduce bottom spacing so the testimonial appears vertically centered between sections
         padding: ["6rem", 0, 0, 0]
+
+  - block: faq
+    id: faq
+    content:
+      title: Frequently asked questions
+      subtitle: Everything you need to know before getting started.
+      items:
+        - question: Do I need to know how to code?
+          answer: |
+            No. Hugo Blox is designed for everyone — edit your site in plain Markdown and YAML. If you do know code, every block is open source and customisable down to the CSS.
+        - question: Where is my site hosted?
+          answer: |
+            Anywhere you like. Hugo Blox builds a static site you can deploy to GitHub Pages, Netlify, Vercel, Cloudflare Pages, or any static host — many on a free tier.
+        - question: Can I migrate from WordPress, Squarespace, or Webflow?
+          answer: |
+            Yes. Your content lives in Markdown files, so you own it and can move it freely. We provide migration guides for the most common platforms.
+        - question: Is it really free?
+          answer: |
+            The framework, blocks, and starter templates are MIT-licensed and free forever. Premium templates and the AI site builder are optional paid upgrades that fund continued development.
+        - question: Can I use my own domain?
+          answer: |
+            Yes — every host we recommend (GitHub Pages, Netlify, Vercel, Cloudflare) supports custom domains for free.
+        - question: How does the AI site builder work?
+          answer: |
+            Describe what you want and the AI assembles a full site from our block catalog — copy, layout, theme, and content scaffolding included. Everything generated is yours to edit, version, and deploy.
+
   - block: cta-card
     content:
-      title: Build your future-proof website
-      text: As easy as 1, 2, 3!
+      title: Ready to ship your site?
+      text: Free, open source, and production-grade. Deploy your first site in minutes.
       button:
-        text: Get Started
+        text: Get Started Free
         url: https://hugoblox.com/templates/
     design:
+      section_break: fade-top
       card:
-        # Card background color (CSS class)
-        css_class: "bg-primary-300"
+        # Brand-coloured card with subtle gradient depth
+        css_class: "bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-600 text-white shadow-2xl"
         css_style: ""
 ---
