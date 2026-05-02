@@ -89,7 +89,10 @@
             "announcement-badge",
             "trust-strip",
             "size-presets",
-            "alignment"
+            "alignment",
+            "media-image",
+            "media-video",
+            "split-layouts"
           ],
           "complexity": "simple",
           "preact": true,

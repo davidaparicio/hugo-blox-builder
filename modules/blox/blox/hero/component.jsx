@@ -81,7 +81,7 @@ function StarStrip({stars}) {
   return (
     <div class="inline-flex items-center gap-0.5 text-amber-400">
       {Array.from({length: 5}).map((_, i) => (
-        <span key={i} class="w-4 h-4 inline-block" dangerouslySetInnerHTML={{__html: i < full ? STAR_FULL : STAR_EMPTY}} />
+        <span key={i} class="w-5 h-5 inline-block" dangerouslySetInnerHTML={{__html: i < full ? STAR_FULL : STAR_EMPTY}} />
       ))}
     </div>
   );
@@ -155,58 +155,150 @@ const ALIGN_TEXT = {center: "text-center", left: "text-left"};
 const ALIGN_FLEX = {center: "justify-center", left: "justify-start"};
 const ALIGN_MX = {center: "mx-auto", left: ""};
 
+// Layout presets. `centered` is the classic stacked hero. `split-*` puts text and media
+// side-by-side (the dominant 2026 SaaS pattern). `stacked` keeps text top-aligned with
+// media full-width below — useful for product screenshots that need horizontal real estate.
+const LAYOUTS = {
+  centered: {container: "max-w-2xl", grid: false, stacked: false, reverse: false},
+  "split-left": {container: "max-w-7xl", grid: true, stacked: false, reverse: false},
+  "split-right": {container: "max-w-7xl", grid: true, stacked: false, reverse: true},
+  stacked: {container: "max-w-6xl", grid: false, stacked: true, reverse: false},
+};
+
+// Media: image (with optional dark variant) or video. Hero `media.src` is processed
+// through Hugo's responsive image pipeline upstream and arrives as `media_image` with
+// {src, srcset, width, height}. Videos pass straight through.
+function Media({media, mediaImage, mediaImageDark}) {
+  if (!media) return null;
+  const type = media.type || "image";
+
+  if (type === "video") {
+    return (
+      <div class="relative">
+        <video
+          src={media.src}
+          poster={media.poster}
+          autoplay={media.autoplay !== false}
+          loop={media.loop !== false}
+          muted={media.muted !== false}
+          playsinline
+          class="w-full h-auto rounded-2xl shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10"
+        />
+      </div>
+    );
+  }
+
+  // image (default)
+  if (!mediaImage) return null;
+  const hasDark = !!mediaImageDark;
+  return (
+    <div class="relative">
+      <img
+        src={mediaImage.src}
+        srcset={mediaImage.srcset}
+        sizes="(max-width: 1024px) 100vw, 50vw"
+        width={mediaImage.width}
+        height={mediaImage.height}
+        alt={media.alt || ""}
+        loading="eager"
+        class={`w-full h-auto rounded-2xl shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10 ${hasDark ? "block dark:hidden" : ""}`}
+      />
+      {hasDark && (
+        <img
+          src={mediaImageDark.src}
+          srcset={mediaImageDark.srcset}
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          width={mediaImageDark.width}
+          height={mediaImageDark.height}
+          alt={media.alt || ""}
+          loading="eager"
+          class="hidden dark:block w-full h-auto rounded-2xl shadow-2xl ring-1 ring-white/10"
+        />
+      )}
+    </div>
+  );
+}
+
 // Hero Block Component - Single implementation
-export const HeroBlock = ({content, design, _id, icon_svg, secondary_icon_svg}) => {
+export const HeroBlock = ({content, design, _id, icon_svg, secondary_icon_svg, media_image, media_image_dark}) => {
   // Backward compat: legacy `no_padding: true` maps to size: "none"
   const sizeKey = SIZE_CLASSES[design?.size] ? design.size : design?.no_padding ? "none" : "default";
   const sizeClasses = SIZE_CLASSES[sizeKey];
 
-  const alignKey = design?.alignment === "left" ? "left" : "center";
+  const layoutKey = LAYOUTS[design?.layout] ? design.layout : "centered";
+  const layout = LAYOUTS[layoutKey];
+
+  // Auto-align: split layouts read better left-aligned unless explicitly centred
+  const alignKey = design?.alignment === "left" || design?.alignment === "center" ? design.alignment : layout.grid ? "left" : "center";
   const textAlign = ALIGN_TEXT[alignKey];
   const flexAlign = ALIGN_FLEX[alignKey];
   const mxAuto = ALIGN_MX[alignKey];
 
-  return (
-    <div class="relative isolate px-6 lg:px-8">
-      <div class={`mx-auto max-w-2xl ${sizeClasses}`}>
-        <AnnouncementPill announcement={content.announcement} alignKey={alignKey} />
+  const contentStack = (
+    <>
+      <AnnouncementPill announcement={content.announcement} alignKey={alignKey} />
+      <div class={textAlign}>
+        {content.eyebrow && (
+          <p
+            class="mb-4 text-sm font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400"
+            dangerouslySetInnerHTML={{__html: renderText(content.eyebrow)}}
+          />
+        )}
+        {content.title && (
+          <h1
+            class="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-6xl"
+            dangerouslySetInnerHTML={{__html: renderTitle(content.title)}}
+          />
+        )}
+        {content.text && (
+          <p
+            class={`mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 max-w-2xl ${mxAuto}`}
+            dangerouslySetInnerHTML={{__html: renderText(content.text)}}
+          />
+        )}
+        {(content.primary_action?.url || content.secondary_action?.url) && (
+          <div class={`mt-10 flex items-center ${flexAlign} gap-x-6 flex-wrap gap-y-3`}>
+            <ActionButton action={content.primary_action} defaultStyle="gradient" iconSvg={icon_svg} />
+            <ActionButton action={content.secondary_action} defaultStyle="text" iconSvg={secondary_icon_svg} />
+          </div>
+        )}
+        <TrustStrip trust={content.trust} alignKey={alignKey} />
+      </div>
+    </>
+  );
 
-        <div class={textAlign}>
-          {/* Eyebrow */}
-          {content.eyebrow && (
-            <p
-              class="mb-4 text-sm font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400"
-              dangerouslySetInnerHTML={{__html: renderText(content.eyebrow)}}
-            />
-          )}
+  const mediaEl = content.media ? <Media media={content.media} mediaImage={media_image} mediaImageDark={media_image_dark} /> : null;
 
-          {/* Title */}
-          {content.title && (
-            <h1
-              class="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-6xl"
-              dangerouslySetInnerHTML={{__html: renderTitle(content.title)}}
-            />
-          )}
-
-          {/* Subtitle/Text */}
-          {content.text && (
-            <p
-              class={`mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 max-w-2xl ${mxAuto}`}
-              dangerouslySetInnerHTML={{__html: renderText(content.text)}}
-            />
-          )}
-
-          {/* Action Buttons */}
-          {(content.primary_action?.url || content.secondary_action?.url) && (
-            <div class={`mt-10 flex items-center ${flexAlign} gap-x-6 flex-wrap gap-y-3`}>
-              <ActionButton action={content.primary_action} defaultStyle="gradient" iconSvg={icon_svg} />
-              <ActionButton action={content.secondary_action} defaultStyle="text" iconSvg={secondary_icon_svg} />
-            </div>
-          )}
-
-          <TrustStrip trust={content.trust} alignKey={alignKey} />
+  // Split layout: two-column grid, optionally reversed
+  if (layout.grid) {
+    return (
+      <div class="relative isolate px-6 lg:px-8">
+        <div class={`mx-auto ${layout.container} ${sizeClasses}`}>
+          <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div class={layout.reverse ? "lg:order-2" : ""}>{contentStack}</div>
+            {mediaEl && <div class={layout.reverse ? "lg:order-1" : ""}>{mediaEl}</div>}
+          </div>
         </div>
       </div>
+    );
+  }
+
+  // Stacked layout: text top (constrained), media full-width below
+  if (layout.stacked) {
+    return (
+      <div class="relative isolate px-6 lg:px-8">
+        <div class={`mx-auto ${layout.container} ${sizeClasses}`}>
+          <div class="mx-auto max-w-3xl">{contentStack}</div>
+          {mediaEl && <div class="mt-16">{mediaEl}</div>}
+        </div>
+      </div>
+    );
+  }
+
+  // Centered (default)
+  return (
+    <div class="relative isolate px-6 lg:px-8">
+      <div class={`mx-auto ${layout.container} ${sizeClasses}`}>{contentStack}</div>
     </div>
   );
 };

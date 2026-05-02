@@ -30,6 +30,13 @@ sections:
       trust:
         stars: 5
         text: Loved by **10,000+** developers · Trusted by teams at Google, OpenAI, NVIDIA
+      # To switch to a split layout with a product mockup, uncomment the media block
+      # below and set `design.layout: split-left` (or `split-right` / `stacked`):
+      # media:
+      #   type: image
+      #   src: dashboard.png
+      #   dark_src: dashboard-dark.png   # optional dark-mode variant
+      #   alt: Hugo Blox dashboard
     design:
       spacing:
         padding: [0, 0, 0, 0]

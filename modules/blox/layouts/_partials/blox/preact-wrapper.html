@@ -33,6 +33,24 @@
   {{ end }}
 {{ end }}
 
+{{/* Resolve hero media (single image, optional dark variant). Videos pass through unprocessed. */}}
+{{ with $block.content.media }}
+  {{ if or (not .type) (eq .type "image") }}
+    {{ with .src }}
+      {{ $img_data := partial "functions/process_image_for_props" (dict "path" . "Page" $page) }}
+      {{ with $img_data.src }}
+        {{ $props = merge $props (dict "media_image" $img_data) }}
+      {{ end }}
+    {{ end }}
+    {{ with .dark_src }}
+      {{ $img_data := partial "functions/process_image_for_props" (dict "path" . "Page" $page) }}
+      {{ with $img_data.src }}
+        {{ $props = merge $props (dict "media_image_dark" $img_data) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
 {{/* Resolve icon for single button (cta-card) */}}
 {{ with $block.content.button.icon }}
   {{ $icon_data := partial "functions/get_icon_data" (dict "name" .) }}
