@@ -42,7 +42,9 @@ sections:
         padding: [0, 0, 0, 0]
         margin: [0, 0, 0, 0]
       css_class: "dark"
-      section_break: fade-bottom
+      section_break:
+        # Fade the hero's bottom edge into the dark logos band beneath (matches its bg-gray-900)
+        fade_bottom: "#101828"
       background:
         # Deep navy base; radial glow paints a soft violet spotlight from above
         color: "#0a0e27"
@@ -383,7 +385,9 @@ sections:
         text: Get Started Free
         url: https://hugoblox.com/templates/
     design:
-      section_break: fade-top
+      section_break:
+        # Fade the cta-card section's top edge into the white FAQ section above
+        fade_top: "#ffffff"
       card:
         # Brand-coloured card with subtle gradient depth
         css_class: "bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-600 text-white shadow-2xl"

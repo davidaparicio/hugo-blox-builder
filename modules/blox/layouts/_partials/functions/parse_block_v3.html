@@ -281,19 +281,31 @@
   {{ $style = printf "%sclip-path: %s;" $style . }}
 {{ end }}
 
-{{/* Section break: mask-image fade for smooth transitions between sections */}}
+{{/* Section break: smooth transitions between sibling sections via gradient
+     overlay divs at the section's top/bottom edges. Each edge fades from
+     transparent (toward the section's content) to a user-specified colour
+     (matching the adjacent sibling's background).
+
+     Example — hero fading into a dark logos band beneath:
+       section_break:
+         fade_bottom: "#101828"     # any CSS colour (hex, rgb, var, named)
+         fade_top:    "#0a0e27"     # optional, independent of fade_bottom
+         size:        "6rem"        # optional, default 6rem (applies to both edges)
+
+     Why explicit colour: a gradient overlay needs to know what colour to fade
+     INTO. Hugo can't reliably auto-detect the next sibling's background at
+     parse time, so the user declares intent. */}}
+{{ $break_overlay := "" }}
 {{ with $block.design.section_break }}
-  {{ $mask := "" }}
-  {{ if eq . "fade-top" }}
-    {{ $mask = "linear-gradient(to bottom, transparent 0%, black 6rem, black 100%)" }}
-  {{ else if eq . "fade-bottom" }}
-    {{ $mask = "linear-gradient(to bottom, black 0%, black calc(100% - 6rem), transparent 100%)" }}
-  {{ else if eq . "fade-both" }}
-    {{ $mask = "linear-gradient(to bottom, transparent 0%, black 6rem, black calc(100% - 6rem), transparent 100%)" }}
+  {{ $sb_size := .size | default "6rem" }}
+  {{ $overlays := slice }}
+  {{ with .fade_bottom }}
+    {{ $overlays = $overlays | append (printf "<div class=\"absolute inset-x-0 bottom-0 pointer-events-none z-0\" style=\"height: %s; background: linear-gradient(to bottom, transparent, %s);\" aria-hidden=\"true\"></div>" $sb_size .) }}
   {{ end }}
-  {{ with $mask }}
-    {{ $style = printf "%s-webkit-mask-image: %s; mask-image: %s;" $style . . }}
+  {{ with .fade_top }}
+    {{ $overlays = $overlays | append (printf "<div class=\"absolute inset-x-0 top-0 pointer-events-none z-0\" style=\"height: %s; background: linear-gradient(to top, transparent, %s);\" aria-hidden=\"true\"></div>" $sb_size .) }}
   {{ end }}
+  {{ $break_overlay = delimit $overlays "" }}
 {{ end }}
 
 {{ $hash_id := $block.id | default (printf "section-%s" (replace $block_type "." "-")) }}
@@ -312,6 +324,8 @@
     <div class="home-section-bg {{if $bg.image}} bg-image{{if ($bg.image.parallax | default true) }} parallax{{end}}{{end}}{{with $bg_css_classes}} {{.}}{{end}}" {{with $style_bg}}style="{{. | safeCSS}}"{{end}}>
       {{with $bg_video}}<video class="bg-video {{$bg_video_class}}" playsinline="" preload="auto" loop="" muted autoplay="" tabindex="-1" width="100%" height="100%" src="{{.RelPermalink}}" style="width: 100%; height: 100%; object-fit: cover; object-position: center center; opacity: 1;"></video>{{end}}
     </div>
+    {{/* Section-break gradient overlays (above bg, below content) */}}
+    {{ with $break_overlay }}{{ . | safeHTML }}{{ end }}
     {{/* Use generic Preact wrapper for content */}}
     {{ partial "blox/preact-wrapper" (dict "wcPage" $page "wcBlock" $block "wcBlockType" $block_type "wcIdentifier" $hash_id) }}
   </section>
@@ -340,6 +354,8 @@
     <div class="home-section-bg {{if $bg.image}} bg-image{{if ($bg.image.parallax | default true) }} parallax{{end}}{{end}}{{with $bg_css_classes}} {{.}}{{end}}" {{with $style_bg}}style="{{. | safeCSS}}"{{end}}>
       {{with $bg_video}}<video class="bg-video {{$bg_video_class}}" playsinline="" preload="auto" loop="" muted autoplay="" tabindex="-1" width="100%" height="100%" src="{{.RelPermalink}}" style="width: 100%; height: 100%; object-fit: cover; object-position: center center; opacity: 1;"></video>{{end}}
     </div>
+    {{/* Section-break gradient overlays (above bg, below content) */}}
+    {{ with $break_overlay }}{{ . | safeHTML }}{{ end }}
     {{ partial $block_path $widget_args }}
   </section>
 {{ end }}
