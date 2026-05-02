@@ -318,7 +318,10 @@
 {{/* Route to appropriate handler */}}
 {{ if $is_preact }}
   {{/* Render Preact block with styling wrapper */}}
-  <section id="{{$hash_id}}" class="relative {{if $has_gradient_mesh}}overflow-hidden{{end}} hbb-section {{$widget_class}} {{if $bg.text_color_light}}dark{{else if (eq $bg.text_color_light false)}}light{{end}} {{with $css_classes}}{{.}}{{end}}" {{with $style}}style="{{. | safeCSS}}"{{end}}>
+  {{/* `isolate` forces a stacking context on the section so the home-section-bg
+       (z-index:-1) and gradient mesh (z-index:-10) layers stay contained — without
+       it, negative-z descendants escape the section and paint behind the page root. */}}
+  <section id="{{$hash_id}}" class="relative isolate {{if $has_gradient_mesh}}overflow-hidden{{end}} hbb-section {{$widget_class}} {{if $bg.text_color_light}}dark{{else if (eq $bg.text_color_light false)}}light{{end}} {{with $css_classes}}{{.}}{{end}}" {{with $style}}style="{{. | safeCSS}}"{{end}}>
     {{/* Gradient Mesh Background */}}
     {{ if $has_gradient_mesh }}{{ $gradient_mesh_html }}{{ end }}
     <div class="home-section-bg {{if $bg.image}} bg-image{{if ($bg.image.parallax | default true) }} parallax{{end}}{{end}}{{with $bg_css_classes}} {{.}}{{end}}" {{with $style_bg}}style="{{. | safeCSS}}"{{end}}>
@@ -348,7 +351,10 @@
   {{ $widget_args := dict "wcPage" $page "wcBlock" $block "wcIdentifier" $hash_id }}
 
   {{/* Render traditional block with wrapper */}}
-  <section id="{{$hash_id}}" class="relative {{if $has_gradient_mesh}}overflow-hidden{{end}} hbb-section {{$widget_class}} {{if $bg.text_color_light}}dark{{else if (eq $bg.text_color_light false)}}light{{end}} {{with $css_classes}}{{.}}{{end}}" {{with $style}}style="{{. | safeCSS}}"{{end}}>
+  {{/* `isolate` forces a stacking context on the section so the home-section-bg
+       (z-index:-1) and gradient mesh (z-index:-10) layers stay contained — without
+       it, negative-z descendants escape the section and paint behind the page root. */}}
+  <section id="{{$hash_id}}" class="relative isolate {{if $has_gradient_mesh}}overflow-hidden{{end}} hbb-section {{$widget_class}} {{if $bg.text_color_light}}dark{{else if (eq $bg.text_color_light false)}}light{{end}} {{with $css_classes}}{{.}}{{end}}" {{with $style}}style="{{. | safeCSS}}"{{end}}>
     {{/* Gradient Mesh Background */}}
     {{ if $has_gradient_mesh }}{{ $gradient_mesh_html }}{{ end }}
     <div class="home-section-bg {{if $bg.image}} bg-image{{if ($bg.image.parallax | default true) }} parallax{{end}}{{end}}{{with $bg_css_classes}} {{.}}{{end}}" {{with $style_bg}}style="{{. | safeCSS}}"{{end}}>
